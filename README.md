@@ -1,13 +1,12 @@
 # Technics High Resolution Audio Player Touch Edition
-<img width="1855" height="737" alt="1" src="https://github.com/user-attachments/assets/ed5331fe-d526-4792-a778-0fc9525351a1" />
+
+<img width="1878" height="737" alt="Capture d&#39;écran 2026-05-31 084618" src="https://github.com/user-attachments/assets/5b32088c-4205-4c35-ad59-343a15576f00" />
 
 ---
 
 # 🎧 Technics High Resolution Audio Player (Touch Edition)
 
 A web-based progressive audio player (PWA) that emulates the interface, ergonomics, and aesthetics of vintage High-Fidelity hardware. This player integrates advanced audio signal processing via the **Web Audio API** and features high-performance, real-time dynamic visualizers.
-
-<img width="1846" height="725" alt="2" src="https://github.com/user-attachments/assets/fafb78d2-1beb-449c-9401-d0f371bc15ea" />
 
 ---
 
@@ -34,8 +33,6 @@ A web-based progressive audio player (PWA) that emulates the interface, ergonomi
 
 * **Loudness Correction:** Active physiological compensation for bass and treble frequencies during low-volume listening (Automatic boost of $+8\text{ dB}$ for bass at $200\text{ Hz}$ and $+4\text{ dB}$ for treble at $10\text{ kHz}$).
 
-  <img width="1865" height="738" alt="4" src="https://github.com/user-attachments/assets/e64a920a-3748-4b67-8efb-78d3e7c37e3b" />
-
 ### 📊 Graphical Visualizers
 
 The system embeds a dual, switchable spectral analysis module (`AnalyserNode`, `fftSize` 1024):
@@ -43,8 +40,6 @@ The system embeds a dual, switchable spectral analysis module (`AnalyserNode`, `
 * **VU Meters Mode:** Dual hardware-style level indicators (Left Channel / Right Channel) calculated using the true Root Mean Square (**RMS**) of the signal, featuring fine sensitivity scaling ($10\%$ to $450\%$) and peak hold functionality.
 * **Spectrum Analyzer Mode:** A matrix LED bar display ($22$ frequency bands per channel) rendered in real-time onto an HTML5 `<canvas>` element.
 * **Waveform Display:** An offline-decoded waveform overview rendered on a dedicated `<canvas>`, synchronized with playback progress. Can be toggled ON/OFF from the settings panel.
-
-  <img width="1886" height="740" alt="3" src="https://github.com/user-attachments/assets/1adf261f-b153-4f8a-b479-26fc76485d6c" />
 
 ### 🗂️ Playlist Management & Metadata Parsing
 
@@ -55,8 +50,6 @@ The system embeds a dual, switchable spectral analysis module (`AnalyserNode`, `
 
 * **Background Metadata Prefetch:** After loading the first track, the player queues remaining tracks for background metadata extraction via a sequential prefetch scheduler, eliminating any loading latency on track change.
 * **Interactive Mini-Playlist:** A side menu drawer to view the current queue, switch instantly to any track, or remove a track with automatic playlist index recalculation.
-
-<img width="1855" height="737" alt="7" src="https://github.com/user-attachments/assets/523e29c2-edf9-40fb-b236-ce9525665716" />
 
 ### 🕹️ Hardware-Style Control Ergonomics
 
@@ -78,8 +71,6 @@ The system embeds a dual, switchable spectral analysis module (`AnalyserNode`, `
 * **Power/Restart Button:** A dedicated power button triggers a confirmation modal before reloading the application session.
 
 ---
-
-<img width="1850" height="725" alt="6" src="https://github.com/user-attachments/assets/4dab82ec-b80e-4206-9285-01c6283af1cf" />
 
 ## 🛠️ Audio Signal Routing Architecture
 
@@ -121,8 +112,6 @@ The `Web Audio API` routing graph is structured as follows within the applicatio
 
 ---
 
-<img width="1856" height="746" alt="5" src="https://github.com/user-attachments/assets/e72dfd4b-b2e1-4d69-9bb5-3ed3c78503ba" />
-
 ## 💾 Installation & Requirements
 
 This application is completely standalone and runs entirely client-side (Vanilla JS).
@@ -135,5 +124,3 @@ This application is completely standalone and runs entirely client-side (Vanilla
 ```
 
 3. Run the project using a local development server (e.g., *Live Server* extension in VS Code) to prevent CORS issues when instantiating the `AudioContext` and processing local files.
-
-<img width="1850" height="733" alt="8" src="https://github.com/user-attachments/assets/effdc7ae-61a2-4db8-aef6-cb9d590b5602" />
