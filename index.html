@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Technics HR Audio Player Touch Edition</title>
+        <meta name="keywords"
+            content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
+        <meta name="Yohann Zaoui">
+        <link rel="icon" type="image/x-icon" href="img/favicon.png">
+        <link rel="apple-touch-icon" href="img/favicon.png">
+        <link rel="manifest" href="manifest.json">
+        <meta name="theme-color" content="#050505">
+
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+    </head>
+    <body>
+
+        <!-- ── POWER RESET MODAL ── -->
+        <div class="modal-overlay" id="powerModal">
+            <div class="modal-box">
+                <div class="modal-icon"><i
+                        class="fa-solid fa-power-off"></i></div>
+                <div class="modal-title">SYSTEM RESET</div>
+                <div class="modal-msg">RESTART PLAYER ?<br>THE CURRENT SESSION
+                    WILL BE LOST</div>
+                <div class="modal-actions">
+                    <button class="modal-btn" id="modalCancel">CANCEL</button>
+                    <button class="modal-btn confirm"
+                        id="modalConfirm">RESTART</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chassis" id="chassisMain">
+            <div class="brand-header">
+                <img src="img/technics_brand_2.webp" alt="Technics"
+                    class="brand-logo">
+                <span></span>
+            </div>
+
+            <div class="power-zone">
+                <button class="btn-power" id="pwrBtn"><i
+                        class="fa-solid fa-power-off"></i></button>
+                <div class="pwr-label">POWER</div>
+                <img src="img/class_aa_2.png" alt="Class AA"
+                    class="class-aa-logo">
+            </div>
+
+            <div class="screen-zone">
+                <div class="screen" id="mainScreen">
+                    <div id="artworkBg" class="artwork-bg"></div>
+                    <div id="muteIndicator" class="ui-indicator">MUTE</div>
+                    <div id="bottomLeftIndicators">
+                        <div id="volumeIndicator" class="ui-indicator">VOLUME
+                            2%</div>
+                        <div id="loudnessIndicator"
+                            class="ui-indicator">LOUDNESS</div>
+                        <div id="bassIndicator" class="ui-indicator">BASS
+                            +0dB</div>
+                        <div id="trebleIndicator" class="ui-indicator">TREBLE
+                            +0dB</div>
+                        <div id="dspIndicator" class="ui-indicator"
+                            style="display:none;">DSP</div>
+                    </div>
+                    <div id="playStateIndicator" class="ui-indicator"
+                        style="display:none;">PLAY</div>
+                    <div id="statusDisplay" class="status-display">VOL 02%</div>
+
+                    <div id="toneMenu" class="tone-menu">
+                        <h3 class="popup-title">DSP CONTROL</h3>
+                        <div class="tone-row">
+                            <span class="tone-label">LOUDNESS</span>
+                            <button id="loudnessBtn" class="tone-btn-small"
+                                style="flex:2;"
+                                onclick="toggleLoudness()">OFF</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">BASS</span>
+                            <button class="tone-btn-small"
+                                onclick="adjustTone('bass', -2)">-</button>
+                            <button class="tone-btn-small"
+                                onclick="adjustTone('bass', 2)">+</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">TREBLE</span>
+                            <button class="tone-btn-small"
+                                onclick="adjustTone('treble', -2)">-</button>
+                            <button class="tone-btn-small"
+                                onclick="adjustTone('treble', 2)">+</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">DSP</span>
+                            <button id="dspBtn_rock" class="DSP-btn"
+                                onclick="toggleDspPreset('rock')">ROCK</button>
+                            <button id="dspBtn_pop" class="DSP-btn"
+                                onclick="toggleDspPreset('pop')">POP</button>
+                            <button id="dspBtn_jazz" class="DSP-btn"
+                                onclick="toggleDspPreset('jazz')">JAZZ</button>
+                            <button id="dspBtn_classic" class="DSP-btn"
+                                onclick="toggleDspPreset('classic')">CLASSIC</button>
+                            <button id="dspBtn_live" class="DSP-btn"
+                                onclick="toggleDspPreset('live')">LIVE</button>
+                            <button id="dspBtn_flat" class="DSP-btn active"
+                                onclick="toggleDspPreset('flat')">FLAT</button>
+                        </div>
+                        <button class="tone-btn-small"
+                            style="margin-top: 10px; background: transparent; border-color: #444; font-family: Michroma, monospace; letter-spacing: 2.5px; font-size: 12px;font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;"
+                            onclick="hideAllMenus()">CLOSE</button>
+                    </div>
+
+                    <div id="settingsMenu" class="tone-menu">
+                        <h3 class="popup-title">SYSTEM SETTINGS</h3>
+                        <div class="tone-row">
+                            <span class="tone-label">GRAPH</span>
+                            <button id="vuToggleBtn" class="btn-settings-wide"
+                                style="flex: 2;"
+                                onclick="toggleVuDisplay()">OFF</button>
+                            <button id="spectrumToggleBtn"
+                                class="btn-settings-wide" style="flex: 2;"
+                                onclick="setVuMode('spectrum')">SPECTRUM</button>
+                            <button id="vuMeterToggleBtn"
+                                class="btn-settings-wide" style="flex: 2;"
+                                onclick="setVuMode('vumeter')">VU A</button>
+                            <button id="analogToggleBtn"
+                                class="btn-settings-wide" style="flex: 2;"
+                                onclick="setVuMode('analog')">VU B</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">VU A SENSITIVITY</span>
+                            <button class="btn-settings-wide"
+                                onclick="adjustVuSensitivity(-0.1)">-</button>
+                            <span id="vuSenseDisplay"
+                                class="sense-val">100%</span>
+                            <button class="btn-settings-wide"
+                                onclick="adjustVuSensitivity(0.1)">+</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">WAVEFORM</span>
+                            <button id="waveformToggleBtn"
+                                class="btn-settings-wide active"
+                                onclick="toggleWaveform()">ON</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">ART BACKGROUND</span>
+                            <button id="artBgToggleBtn"
+                                class="btn-settings-wide"
+                                onclick="toggleArtBackground()">OFF</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">BACKGROUND COLOR</span>
+                            <input type="color" id="appBgColorPicker"
+                                value="#050505"
+                                onchange="updateAppBackground(this.value)">
+                        </div>
+                        <button class="tone-btn-small"
+                            style="margin-top: 10px; background: transparent; border-color: #444; font-family: Michroma, monospace; letter-spacing: 2.5px; font-size: 12px;font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;"
+                            onclick="hideAllMenus()">CLOSE</button>
+                    </div>
+
+                    <div id="playlistMenu" class="tone-menu">
+                        <h3 class="popup-title">PLAYLIST</h3>
+                        <div id="playlistContainerMini"
+                            class="playlist-container-mini"></div>
+                        <button class="tone-btn-small"
+                            style="margin-top: 10px; background: transparent; border-color: #444; font-family: Michroma, monospace; letter-spacing: 2.5px; font-size: 12px;font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;"
+                            onclick="hideAllMenus()">CLOSE</button>
+                    </div>
+
+                    <div class="content-area">
+                        <div id="playerView" class="main-view">
+                            <div id="albumArt" class="album-art"><i
+                                    class="fa-solid fa-compact-disc"></i></div>
+                            <div class="track-info">
+                                <div id="format">READY</div>
+                                <h1 id="trackTitle" class="title"></h1>
+                                <div id="trackArtist"
+                                    class="artist"></div>
+                                <div id="trackAlbum" class="album-name">LOAD OR
+                                    DRAG FILES TO START</div>
+                                <img src="img/technics_brand_1.webp"
+                                    alt="Technics Logo" id="standbyLogo"
+                                    class="standby-logo">
+                                <div id="timeCounter" class="time-counter">TIME
+                                    00:00
+                                    / 00:00</div>
+                                <div id="trackCounter"
+                                    class="track-counter">TRACK 0 / 0</div>
+
+                                <div id="vuContainer" class="vu-container">
+                                    <div class="vu-db-labels">
+                                        <span>-40</span><span>-30</span><span>-20</span><span>-14</span><span>-10</span><span>-7</span><span>-5</span><span>-3</span><span>-1</span><span>0
+                                            dB</span>
+                                    </div>
+                                    <div class="vu-meter-row"><span
+                                            class="vu-label">L</span><div
+                                            class="vu-bar-bg"
+                                            id="vuLBar"></div></div>
+                                    <div class="vu-meter-row"><span
+                                            class="vu-label">R</span><div
+                                            class="vu-bar-bg"
+                                            id="vuRBar"></div></div>
+                                    <div class="vu-db-labels">
+                                        <span>-40</span><span>-30</span><span>-20</span><span>-14</span><span>-10</span><span>-7</span><span>-5</span><span>-3</span><span>-1</span><span>0
+                                            dB</span>
+                                    </div>
+                                    <div class="spectrum-freq-labels-wrap">
+                                        <div class="spectrum-freq-labels">
+                                            <span>20</span><span>60</span><span>120</span><span>250</span><span>500</span><span>1k</span><span>2k</span><span>4k</span><span>8k</span><span>16k</span><span>20k</span>
+                                        </div>
+                                        <div class="spectrum-freq-labels">
+                                            <span>20</span><span>60</span><span>120</span><span>250</span><span>500</span><span>1k</span><span>2k</span><span>4k</span><span>8k</span><span>16k</span><span>20k</span>
+                                        </div>
+                                    </div>
+                                    <canvas id="spectrumCanvas" width="200"
+                                        height="30"></canvas>
+                                    <div class="spectrum-channel-labels">
+                                        <span>L E F T</span>
+                                        <span>R I G H T</span>
+                                    </div>
+
+                                    <!-- ANALOG VU METER STEREO -->
+                                    <div id="analogVuContainer"
+                                        class="analog-vu-wrap">
+                                        <!-- LEFT -->
+                                        <div class="analog-vu-chassis">
+                                            <svg viewBox="0 0 650 220"
+                                                class="analog-vu-svg"
+                                                overflow="hidden">
+                                                <defs>
+                                                    <radialgradient id="bgGradL"
+                                                        cx="50%" cy="50%"
+                                                        r="60%">
+                                                        <stop offset="20%"
+                                                            stop-color="#ffaa00" />
+                                                        <stop offset="100%"
+                                                            stop-color="#cc7a00" />
+                                                    </radialgradient>
+                                                    <clippath id="frameClipL">
+                                                        <rect x="0" y="0"
+                                                            width="650"
+                                                            height="220" />
+                                                    </clippath>
+                                                </defs>
+                                                <rect width="650" height="220"
+                                                    fill="url(#bgGradL)" />
+
+                                                <!-- Labels Michroma -->
+                                                <text x="325" y="42"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="14"
+                                                    font-weight="bold"
+                                                    letter-spacing="5"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle"
+                                                    opacity="0.9">POWER</text>
+                                                <text x="325" y="198"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="14"
+                                                    font-weight="bold"
+                                                    letter-spacing="5"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle"
+                                                    opacity="0.9">LEFT</text>
+
+                                                <!-- Scale line — dasharray exacte vumeterA, pas de traits obliques -->
+                                                <line x1="65" y1="118" x2="585"
+                                                    y2="118" stroke="#0d0800"
+                                                    stroke-width="5"
+                                                    stroke-linecap="butt"
+                                                    stroke-dasharray="52 7" />
+
+                                                <!-- Watts values Michroma -->
+                                                <text x="70" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">1</text>
+                                                <text x="160" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">10</text>
+                                                <text x="250" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">50</text>
+                                                <text x="340" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">100</text>
+                                                <text x="430" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">200</text>
+                                                <text x="540" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">300
+                                                    W</text>
+
+                                                <!-- dB values Michroma -->
+                                                <text x="135" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-50</text>
+                                                <text x="205" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-40</text>
+                                                <text x="275" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-30</text>
+                                                <text x="345" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-20</text>
+                                                <text x="415" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-10</text>
+                                                <text x="515" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">0
+                                                    dB</text>
+
+                                                <g id="needleGroupL"
+                                                    clip-path="url(#frameClipL)"
+                                                    style="transform-origin:325px 260px; transform:rotate(-55deg)">
+                                                    <line x1="325" y1="260"
+                                                        x2="255" y2="40"
+                                                        stroke="#111"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round" />
+                                                </g>
+
+                                                <rect x="0" y="0" width="650"
+                                                    height="220" fill="none"
+                                                    stroke="#111"
+                                                    stroke-width="8" />
+                                            </svg>
+                                        </div>
+                                        <!-- RIGHT -->
+                                        <div class="analog-vu-chassis">
+                                            <svg viewBox="0 0 650 220"
+                                                class="analog-vu-svg"
+                                                overflow="hidden">
+                                                <defs>
+                                                    <radialgradient id="bgGradR"
+                                                        cx="50%" cy="50%"
+                                                        r="60%">
+                                                        <stop offset="20%"
+                                                            stop-color="#ffaa00" />
+                                                        <stop offset="100%"
+                                                            stop-color="#cc7a00" />
+                                                    </radialgradient>
+                                                    <clippath id="frameClipR">
+                                                        <rect x="0" y="0"
+                                                            width="650"
+                                                            height="220" />
+                                                    </clippath>
+                                                </defs>
+                                                <rect width="650" height="220"
+                                                    fill="url(#bgGradR)" />
+
+                                                <text x="325" y="42"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="14"
+                                                    font-weight="bold"
+                                                    letter-spacing="5"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle"
+                                                    opacity="0.9">POWER</text>
+                                                <text x="325" y="198"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="14"
+                                                    font-weight="bold"
+                                                    letter-spacing="5"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle"
+                                                    opacity="0.9">RIGHT</text>
+
+                                                <line x1="65" y1="118" x2="585"
+                                                    y2="118" stroke="#0d0800"
+                                                    stroke-width="5"
+                                                    stroke-linecap="butt"
+                                                    stroke-dasharray="52 7" />
+
+                                                <text x="70" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">1</text>
+                                                <text x="160" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">10</text>
+                                                <text x="250" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">50</text>
+                                                <text x="340" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">100</text>
+                                                <text x="430" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">200</text>
+                                                <text x="540" y="92"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="22"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">300
+                                                    W</text>
+
+                                                <text x="135" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-50</text>
+                                                <text x="205" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-40</text>
+                                                <text x="275" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-30</text>
+                                                <text x="345" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-20</text>
+                                                <text x="415" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">-10</text>
+                                                <text x="515" y="150"
+                                                    font-family="Michroma,sans-serif"
+                                                    font-size="16"
+                                                    fill="#0d0800"
+                                                    text-anchor="middle">0
+                                                    dB</text>
+
+                                                <g id="needleGroupR"
+                                                    clip-path="url(#frameClipR)"
+                                                    style="transform-origin:325px 260px; transform:rotate(-55deg)">
+                                                    <line x1="325" y1="260"
+                                                        x2="255" y2="40"
+                                                        stroke="#111"
+                                                        stroke-width="2"
+                                                        stroke-linecap="round" />
+                                                </g>
+
+                                                <rect x="0" y="0" width="650"
+                                                    height="220" fill="none"
+                                                    stroke="#111"
+                                                    stroke-width="8" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls-bar">
+                        <canvas id="waveformCanvas"
+                            class="waveform-canvas"></canvas>
+                        <button class="control-btn btn-load"
+                            onclick="document.getElementById('fileInput').click()"><i
+                                class="fa-solid fa-eject"></i><label>LOAD</label></button>
+                        <button class="control-btn media-ctrl" id="playBtn"
+                            onclick="togglePlay()"><i
+                                class="fa-solid fa-play"></i><label
+                                id="playBtnLabel">PLAY</label></button>
+                        <button class="control-btn media-ctrl" id="prevBtn"><i
+                                class="fa-solid fa-backward-step"></i><label>PREV</label></button>
+                        <button class="control-btn media-ctrl" id="nextBtn"><i
+                                class="fa-solid fa-forward-step"></i><label>NEXT</label></button>
+                        <button class="control-btn media-ctrl"
+                            onclick="stopAudio()"><i
+                                class="fa-solid fa-stop"></i><label>STOP</label></button>
+                        <button class="control-btn media-ctrl" id="shuffleBtn"
+                            onclick="toggleShuffle()"><i
+                                class="fa-solid fa-shuffle"></i><label>RANDOM</label></button>
+
+                        <button class="control-btn media-ctrl" id="repeatBtn"
+                            onclick="cycleRepeat()">
+                            <span id="rep1" class="repeat-mode-label">1</span>
+                            <span id="repAll"
+                                class="repeat-mode-label">ALL</span>
+                            <i class="fa-solid fa-repeat"></i>
+                            <label>REPEAT</label>
+                        </button>
+                        <button class="control-btn media-ctrl" id="playlistBtn"
+                            onclick="togglePlaylist()"><i
+                                class="fa-solid fa-list"></i><label>PLAYLIST</label></button>
+
+                        <button class="control-btn media-ctrl"
+                            id="volDownBtn"><i
+                                class="fa-solid fa-volume-low"></i><label>VOL-</label></button>
+                        <button class="control-btn media-ctrl" id="muteBtn"
+                            onclick="toggleMute()"><i
+                                class="fa-solid fa-volume-xmark"></i><label>MUTE</label></button>
+                        <button class="control-btn media-ctrl" id="volUpBtn"><i
+                                class="fa-solid fa-volume-high"></i><label>VOL+</label></button>
+                        <button class="control-btn media-ctrl" id="toneBtn"
+                            onclick="toggleTone()"><i
+                                class="fa-solid fa-sliders"></i><label>DSP</label></button>
+                        <button class="control-btn media-ctrl" id="settingsBtn"
+                            onclick="toggleSettings()"><i
+                                class="fa-solid fa-gear"></i><label>SETTINGS</label></button>
+                    </div>
+                    <div class="progress-container" id="progressContainer"><div
+                            id="progressBar" class="progress-bar"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" accept="audio/*" multiple>
+        <audio id="audioPlayer" crossorigin="anonymous"></audio>
+
+        <script data-goatcounter="https://touch.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+
+        <script src="app.js"></script>
+
+    </body>
+</html>
