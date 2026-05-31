@@ -1,10 +1,10 @@
-# Technics High Resolution Audio Player Touch Edition
+# Technics High Resolution Audio Player Touch Edition Black Edition
 
 <img width="1878" height="737" alt="Capture d&#39;écran 2026-05-31 084618" src="https://github.com/user-attachments/assets/5b32088c-4205-4c35-ad59-343a15576f00" />
 
 ---
 
-# 🎧 Technics High Resolution Audio Player (Touch Edition)
+# 🎧 Technics High Resolution Audio Player Touch Edition Black Edition
 
 A web-based progressive audio player (PWA) that emulates the interface, ergonomics, and aesthetics of vintage High-Fidelity hardware. This player integrates advanced audio signal processing via the **Web Audio API** and features high-performance, real-time dynamic visualizers.
 
