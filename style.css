@@ -478,7 +478,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     width: 100%;
-    padding-left: 30px;
+    padding-left: 35px;
     box-sizing: border-box;
     margin-bottom: 3px;
 }
@@ -513,7 +513,8 @@ body {
 }
 
 .vu-label {
-
+    width: 20px;
+    flex-shrink: 0;
     font-family: "Michroma", monospace;
     font-optical-sizing: auto;
     font-weight: 400;
