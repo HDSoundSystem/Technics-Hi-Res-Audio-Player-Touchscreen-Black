@@ -12,7 +12,7 @@
     --pwr-button-size: 75px;
     --ui-off-opacity: 0;
     --chassis-base: #d1d1d1;
-    --screen-border: #464646;
+    --screen-border: #303030;
     --chassis-W: 1800px;
     --chassis-H: 680px;
 }
@@ -34,8 +34,8 @@ body {
     width: var(--chassis-W);
     height: var(--chassis-H);
     background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(255, 255, 255, 0.25) 100%),
-        url('./img/chassis.png') center/cover no-repeat;
+        linear-gradient(90deg, rgba(105, 105, 105, 0.25) 0%, rgba(0, 0, 0, 0.425) 50%, rgba(105, 105, 105, 0.25) 100%),
+        url('./img/chassis_2.png') center/cover no-repeat;
 
     border-radius: 4px;
     position: relative;
@@ -83,7 +83,7 @@ body {
 }
 
 .pwr-label {
-    color: #333;
+    color: #acacac;
     font-size: 10px;
     font-weight: 300;
     margin-top: 15px;
@@ -96,23 +96,22 @@ body {
     height: var(--pwr-button-size);
     background:
         conic-gradient(from -90deg,
-            #d8d8d8 0%, #ffffff 5%, #d8d8d8 10%, #bfbfbf 15%,
-            #d8d8d8 20%, #ffffff 25%, #d8d8d8 30%, #bfbfbf 35%,
-            #d8d8d8 40%, #ffffff 45%, #d8d8d8 50%, #bfbfbf 55%,
-            #d8d8d8 60%, #ffffff 65%, #d8d8d8 70%, #bfbfbf 75%,
-            #d8d8d8 80%, #ffffff 85%, #d8d8d8 90%, #bfbfbf 95%,
-            #d8d8d8 100%),
-        repeating-radial-gradient(circle, #e6e6e6 0px, #e6e6e6 1px, #d9d9d9 1px, #d9d9d9 2px);
-
-    border: 2px solid rgba(8, 8, 8, 0.452);
-
+            #222222 0%, #444444 5%, #222222 10%, #151515 15%,
+            #222222 20%, #444444 25%, #222222 30%, #151515 35%,
+            #222222 40%, #444444 45%, #222222 50%, #151515 55%,
+            #222222 60%, #444444 65%, #222222 70%, #151515 75%,
+            #222222 80%, #444444 85%, #222222 90%, #151515 95%,
+            #222222 100%),
+        repeating-radial-gradient(circle, #2a2a2a 0px, #2a2a2a 1px, #1a1a1a 1px, #1a1a1a 2px);
+    border: 2px solid rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0.5px 0.5px 1px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.4);
     border-radius: 50%;
     cursor: pointer;
     font-size: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #333;
+    color: #acacac;
     transition: all 0.1s ease;
     margin-left: 5px;
 }
