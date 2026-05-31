@@ -1,0 +1,18 @@
+{
+  "id": "technics-touch",
+  "name": "Technics HR Audio Player Touch Edition",
+  "short_name": "Technics HR Player TE",
+  "start_url": "https://hdsoundsystem.github.io/Technics-Hi-Res-Audio-Player-Touchscreen/",
+  "scope": "/Technics-Hi-Res-Audio-Player-Touchscreen/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "icons": [
+    {
+      "src": "img/favicon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
