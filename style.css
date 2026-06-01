@@ -214,10 +214,10 @@ body {
     bottom: 100px;
 }
 
-#bottomLeftIndicators {
+#topRightIndicators {
     position: absolute;
-    bottom: 100px;
-    left: 40px;
+    top: 20px;
+    right: 30px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -225,7 +225,7 @@ body {
     z-index: 55;
 }
 
-#bottomLeftIndicators .ui-indicator {
+#topRightIndicators .ui-indicator {
     position: static;
     top: auto;
     bottom: auto;
@@ -235,10 +235,11 @@ body {
 
 #muteIndicator {
     right: 30px;
+    top: 55px;
 }
 
 #playStateIndicator {
-    right: 110px;
+    display: none;
 }
 
 #volumeIndicator {
