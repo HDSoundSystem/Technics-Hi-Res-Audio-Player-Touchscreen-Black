@@ -1209,7 +1209,7 @@ function decodeWaveform(file) {
         const offlineCtx = new OfflineAudioContext(1, 1, 44100);
         offlineCtx.decodeAudioData(e.target.result.slice(0), (buffer) => {
             const raw = buffer.getChannelData(0);
-            const points = 800;
+            const points = 700;
             const step = Math.floor(raw.length / points);
             const data = new Float32Array(points);
             for (let i = 0; i < points; i++) {
