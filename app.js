@@ -20,7 +20,7 @@ let vuAnimationRunning = false;
 function updateVolumeIndicator() {
     if (volInd) {
         if (playlist.length > 0) {
-            volInd.textContent = 'VOLUME ' + Math.round(audio.volume * 100) + '%';
+            volInd.textContent = 'VOL ' + Math.round(audio.volume * 100) + '%';
             volInd.style.display = 'block';
         } else {
             volInd.style.display = 'none';
@@ -70,7 +70,7 @@ let currentDspPreset = 'flat';
 let splitter, spectrumAnalyserL, spectrumAnalyserR;
 let isLoudnessActive = false;
 let peakL = 0, peakR = 0, peakTimerL = 0, peakTimerR = 0;
-let bassGain = 0, trebleGain = 0, isVuActive = true, vuSensitivity = 3.0, isSpectrumMode = true, isAnalogMode = false;
+let bassGain = 0, trebleGain = 0, isVuActive = true, vuSensitivity = 3.0, analogSensitivity = 1.8, isSpectrumMode = true, isAnalogMode = false;
 let playlist = [], currentIndex = 0;
 let isShuffle = false, repeatMode = 0, volInterval = null, seekInterval = null;
 
@@ -98,7 +98,7 @@ function updateStatus(text) {
 function savePreferences() {
     localStorage.setItem('technics_prefs_v12', JSON.stringify({
         volume: audio.volume, bass: bassGain, treble: trebleGain, dspPreset: currentDspPreset, waveform: waveformEnabled,
-        appBackground: appBgColorPicker.value, vuActive: isVuActive, vuSensitivity: vuSensitivity, loudness: isLoudnessActive,
+        appBackground: appBgColorPicker.value, vuActive: isVuActive, vuSensitivity: vuSensitivity, analogSensitivity: analogSensitivity, loudness: isLoudnessActive,
         artBgActive: isArtBgActive
     }));
 }
@@ -113,8 +113,11 @@ function loadPreferences() {
         if (p.dspPreset) currentDspPreset = p.dspPreset;
         if (p.waveform !== undefined) waveformEnabled = p.waveform;
         vuSensitivity = p.vuSensitivity || 3.0;
+        analogSensitivity = p.analogSensitivity || 1.8;
         isVuActive = p.vuActive !== undefined ? p.vuActive : true;
         vuSenseDisplay.innerText = Math.round(vuSensitivity * 100) + '%';
+        const analogSenseDisp = document.getElementById('analogSenseDisplay');
+        if (analogSenseDisp) analogSenseDisp.innerText = Math.round(analogSensitivity * 100) + '%';
         if (p.loudness) { isLoudnessActive = p.loudness; const btn = document.getElementById('loudnessBtn'); if (btn) { btn.textContent = isLoudnessActive ? 'ON' : 'OFF'; btn.classList.toggle('active', isLoudnessActive); } const loudInd = document.getElementById('loudnessIndicator'); if (loudInd && isLoudnessActive) loudInd.style.display = 'block'; }
         if (p.appBackground) { appBgColorPicker.value = p.appBackground; updateAppBackground(p.appBackground); }
         if (p.artBgActive) {
@@ -176,6 +179,15 @@ function adjustVuSensitivity(val) {
     updateStatus(`VU SENSE ${Math.round(vuSensitivity * 100)}%`);
     savePreferences();
 }
+
+function adjustAnalogSensitivity(val) {
+    analogSensitivity = Math.min(4.5, Math.max(0.1, analogSensitivity + val));
+    const analogSenseDisp = document.getElementById('analogSenseDisplay');
+    if (analogSenseDisp) analogSenseDisp.innerText = Math.round(analogSensitivity * 100) + '%';
+    updateStatus(`VU B SENSE ${Math.round(analogSensitivity * 100)}%`);
+    savePreferences();
+}
+
 
 function initAudioContext() {
     if (!audioCtx) {
@@ -399,7 +411,7 @@ function drawAnalogVu(isPlaying) {
         const s = ANALOG_CFG;
         let target;
         if (isPlaying) {
-            const boosted = Math.min(255, raw * s.SIGNAL_BOOST);
+            const boosted = Math.min(255, raw * analogSensitivity);
             const normalized = Math.pow(boosted / 255, s.RESPONSE_CURVE);
             target = s.ANGLE_REST + normalized * s.ANGLE_MAX;
             analogState[ch].current += (target - analogState[ch].current) * s.SMOOTHING_ATTACK;
