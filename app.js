@@ -568,6 +568,7 @@ function loadTrack(index, autoPlay = true) {
     }
 
     if (metaCache.has(file) && coverCache.has(file)) {
+        // Tags ET cover déjà en mémoire : affichage immédiat
         const cachedCover = coverCache.get(file);
         const tmp = document.createElement('div');
         tmp.innerHTML = metaCache.get(file);
@@ -576,6 +577,24 @@ function loadTrack(index, autoPlay = true) {
         const artist = spans[1] ? spans[1].textContent.replace('ARTIST: ', '') : 'UNKNOWN ARTIST';
         const album = spans[2] ? spans[2].textContent.replace('ALBUM: ', '') : 'UNKNOWN ALBUM';
         applyTrackMeta(title, artist, album, cachedCover);
+    } else if (_hydrateFromPersisted(file)) {
+        // Tags en localStorage, cover absente : afficher le texte immédiatement
+        // puis relire jsmediatags uniquement pour la cover
+        const tmp = document.createElement('div');
+        tmp.innerHTML = metaCache.get(file);
+        const spans = tmp.querySelectorAll('span');
+        const title = spans[0] ? spans[0].textContent.replace('TITLE: ', '') : file.name.toUpperCase();
+        const artist = spans[1] ? spans[1].textContent.replace('ARTIST: ', '') : 'UNKNOWN ARTIST';
+        const album = spans[2] ? spans[2].textContent.replace('ALBUM: ', '') : 'UNKNOWN ALBUM';
+        applyTrackMeta(title, artist, album, null);
+        jsmediatags.read(file, {
+            onSuccess: (tag) => {
+                const coverUrl = extractCover(tag.tags);
+                coverCache.set(file, coverUrl);
+                applyTrackMeta(title, artist, album, coverUrl);
+            },
+            onError: () => { coverCache.set(file, null); }
+        });
     } else {
         jsmediatags.read(file, {
             onSuccess: (tag) => {
@@ -585,21 +604,19 @@ function loadTrack(index, autoPlay = true) {
                 const album = (t.album || 'UNKNOWN ALBUM').toUpperCase();
                 const coverUrl = extractCover(t);
 
-                if (!metaCache.has(file)) {
-                    const html = '<span class="pl-title">TITLE: ' + title + '</span>'
-                        + '<span class="pl-artist">ARTIST: ' + artist + '</span>'
-                        + (album ? '<span class="pl-album">ALBUM: ' + album + '</span>' : '');
-                    metaCache.set(file, html);
-                    coverCache.set(file, coverUrl);
-                }
+                const html = '<span class="pl-title">TITLE: ' + title + '</span>'
+                    + '<span class="pl-artist">ARTIST: ' + artist + '</span>'
+                    + (album ? '<span class="pl-album">ALBUM: ' + album + '</span>' : '');
+                metaCache.set(file, html);
+                coverCache.set(file, coverUrl);
+                _persistMeta(file, title, artist, album);
                 applyTrackMeta(title, artist, album, coverUrl);
             },
             onError: () => {
                 const title = file.name.toUpperCase();
-                if (!metaCache.has(file)) {
-                    metaCache.set(file, '<span class="pl-title">' + title + '</span>');
-                    coverCache.set(file, null);
-                }
+                metaCache.set(file, '<span class="pl-title">' + title + '</span>');
+                coverCache.set(file, null);
+                _persistMeta(file, title, 'UNKNOWN ARTIST', '');
                 applyTrackMeta(title, 'UNKNOWN ARTIST', 'UNKNOWN ALBUM', null);
             }
         });
@@ -613,9 +630,15 @@ function loadTrack(index, autoPlay = true) {
     audio.src = objectUrl;
     audio.dataset.objectUrl = objectUrl;
 
-    decodeWaveform(file);
+    // durationCache : écoute loadedmetadata une seule fois pour persister la durée
+    audio.addEventListener('loadedmetadata', function _onMeta() {
+        audio.removeEventListener('loadedmetadata', _onMeta);
+        if (isFinite(audio.duration) && audio.duration > 0) {
+            durationCache.set(file, audio.duration);
+        }
+    });
 
-    updateMediaSession(file.name.toUpperCase(), "UNKNOWN ARTIST", "UNKNOWN ALBUM");
+    decodeWaveform(file);
     setupMediaSessionActions();
 
     if (autoPlay) {
@@ -813,9 +836,10 @@ function stopAudio() {
 
     if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = "paused";
+        // Optionnel : Vide l'affichage système lors d'un vrai STOP
+        navigator.mediaSession.metadata = null; 
     }
 }
-
 audio.onended = () => {
     if (repeatMode === 1) { audio.play(); }
     else if (repeatMode === 2 || currentIndex < playlist.length - 1) { playNext(); }
@@ -866,6 +890,45 @@ function togglePlaylist() {
 const metaCache = new Map();
 const coverCache = new Map();
 
+// ── Cache persistant (localStorage) ─────────────────────────────────────────
+// Clé : "filename|size" — les covers ne sont PAS persistées (trop lourdes en base64)
+const _META_STORE  = 'technics_metaCache_v1';
+const _DUR_STORE   = 'technics_durationCache_v1';
+
+let _pMeta = {};
+let _pDur  = {};
+try { _pMeta = JSON.parse(localStorage.getItem(_META_STORE)  || '{}'); } catch(e) {}
+try { _pDur  = JSON.parse(localStorage.getItem(_DUR_STORE)   || '{}'); } catch(e) {}
+
+function _cacheKey(file) { return file.name + '|' + file.size; }
+
+// Tente de pré-hydrater metaCache depuis le localStorage ; retourne true si trouvé
+function _hydrateFromPersisted(file) {
+    if (metaCache.has(file)) return true;
+    const p = _pMeta[_cacheKey(file)];
+    if (!p) return false;
+    const html = '<span class="pl-title">TITLE: ' + p.title + '</span>'
+        + '<span class="pl-artist">ARTIST: ' + p.artist + '</span>'
+        + (p.album ? '<span class="pl-album">ALBUM: ' + p.album + '</span>' : '');
+    metaCache.set(file, html);
+    // coverCache intentionnellement laissé vide — sera rempli par jsmediatags
+    return true;
+}
+
+function _persistMeta(file, title, artist, album) {
+    _pMeta[_cacheKey(file)] = { title, artist, album };
+    try { localStorage.setItem(_META_STORE, JSON.stringify(_pMeta)); } catch(e) {}
+}
+
+// durationCache persistant
+const durationCache = {
+    get(file) { return _pDur[_cacheKey(file)] ?? null; },
+    set(file, dur) {
+        _pDur[_cacheKey(file)] = dur;
+        try { localStorage.setItem(_DUR_STORE, JSON.stringify(_pDur)); } catch(e) {}
+    }
+};
+
 function extractCover(t) {
     if (!t.picture) return null;
     const { data, format } = t.picture;
@@ -874,14 +937,21 @@ function extractCover(t) {
     for (let i = 0; i < data.length; i += chunk) {
         b64 += String.fromCharCode.apply(null, data.slice(i, i + chunk));
     }
-    return `data:${format};base64,${window.btoa(b64)}`;
+    
+    // Sécurité pour le type MIME
+    let mimeType = format;
+    if (!mimeType.includes('/')) {
+        mimeType = `image/${format}`; // Transforme "jpeg" en "image/jpeg"
+    }
+    
+    return `data:${mimeType};base64,${window.btoa(b64)}`;
 }
 
 let prefetchQueue = [];
 let prefetchRunning = false;
 
 function prefetchNext() {
-    while (prefetchQueue.length > 0 && metaCache.has(prefetchQueue[0])) {
+    while (prefetchQueue.length > 0 && (metaCache.has(prefetchQueue[0]) || _hydrateFromPersisted(prefetchQueue[0]))) {
         prefetchQueue.shift();
     }
     if (prefetchQueue.length === 0) { prefetchRunning = false; return; }
@@ -898,12 +968,15 @@ function prefetchNext() {
                     + '<span class="pl-artist">ARTIST: ' + artist + '</span>'
                     + (album ? '<span class="pl-album">ALBUM: ' + album + '</span>' : '');
                 metaCache.set(file, html);
+                _persistMeta(file, title, artist, album);
                 const coverUrl = extractCover(t);
                 coverCache.set(file, coverUrl);
                 prefetchNext();
             },
             onError: () => {
-                metaCache.set(file, '<span class="pl-title">' + file.name.toUpperCase() + '</span>');
+                const title = file.name.toUpperCase();
+                metaCache.set(file, '<span class="pl-title">' + title + '</span>');
+                _persistMeta(file, title, 'UNKNOWN ARTIST', '');
                 coverCache.set(file, null);
                 prefetchNext();
             }
@@ -912,16 +985,35 @@ function prefetchNext() {
 }
 
 function schedulePrefetch(files) {
-    prefetchQueue.push(...files.filter(f => !metaCache.has(f)));
+    prefetchQueue.push(...files.filter(f => !metaCache.has(f) && !_hydrateFromPersisted(f)));
     if (!prefetchRunning) prefetchNext();
 }
 
 function getTrackLabel(file, textEl, imgEl) {
-    if (metaCache.has(file)) {
+    if (metaCache.has(file) && coverCache.has(file)) {
+        // Tags ET cover en mémoire
         textEl.innerHTML = metaCache.get(file);
-        if (imgEl && coverCache.has(file)) {
+        if (imgEl) {
             const url = coverCache.get(file);
             if (url) { imgEl.src = url; imgEl.style.display = 'block'; }
+        }
+        return;
+    }
+    if (_hydrateFromPersisted(file) || metaCache.has(file)) {
+        // Tags en cache (localStorage ou mémoire), cover absente
+        textEl.innerHTML = metaCache.get(file);
+        if (imgEl) {
+            // Relire jsmediatags uniquement pour la cover
+            jsmediatags.read(file, {
+                onSuccess: (tag) => {
+                    const coverUrl = extractCover(tag.tags);
+                    coverCache.set(file, coverUrl);
+                    if (coverUrl) { imgEl.src = coverUrl; imgEl.style.display = 'block'; }
+                },
+                onError: () => { coverCache.set(file, null); }
+            });
+        } else {
+            coverCache.set(file, null);
         }
         return;
     }
@@ -936,6 +1028,7 @@ function getTrackLabel(file, textEl, imgEl) {
                 + '<span class="pl-artist">ARTIST: ' + artist + '</span>'
                 + (album ? '<span class="pl-album">ALBUM: ' + album + '</span>' : '');
             metaCache.set(file, html);
+            _persistMeta(file, title, artist, album);
             textEl.innerHTML = html;
 
             const coverUrl = extractCover(t);
@@ -943,8 +1036,10 @@ function getTrackLabel(file, textEl, imgEl) {
             if (imgEl && coverUrl) { imgEl.src = coverUrl; imgEl.style.display = 'block'; }
         },
         onError: () => {
-            const html = '<span class="pl-title">' + file.name.toUpperCase() + '</span>';
+            const title = file.name.toUpperCase();
+            const html = '<span class="pl-title">' + title + '</span>';
             metaCache.set(file, html);
+            _persistMeta(file, title, 'UNKNOWN ARTIST', '');
             coverCache.set(file, null);
             textEl.innerHTML = html;
         }
