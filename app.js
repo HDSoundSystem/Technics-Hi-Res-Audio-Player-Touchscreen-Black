@@ -639,8 +639,6 @@ function loadTrack(index, autoPlay = true) {
     });
 
     decodeWaveform(file);
-
-    updateMediaSession(file.name.toUpperCase(), "UNKNOWN ARTIST", "UNKNOWN ALBUM");
     setupMediaSessionActions();
 
     if (autoPlay) {
@@ -838,9 +836,10 @@ function stopAudio() {
 
     if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = "paused";
+        // Optionnel : Vide l'affichage système lors d'un vrai STOP
+        navigator.mediaSession.metadata = null; 
     }
 }
-
 audio.onended = () => {
     if (repeatMode === 1) { audio.play(); }
     else if (repeatMode === 2 || currentIndex < playlist.length - 1) { playNext(); }
@@ -938,7 +937,14 @@ function extractCover(t) {
     for (let i = 0; i < data.length; i += chunk) {
         b64 += String.fromCharCode.apply(null, data.slice(i, i + chunk));
     }
-    return `data:${format};base64,${window.btoa(b64)}`;
+    
+    // Sécurité pour le type MIME
+    let mimeType = format;
+    if (!mimeType.includes('/')) {
+        mimeType = `image/${format}`; // Transforme "jpeg" en "image/jpeg"
+    }
+    
+    return `data:${mimeType};base64,${window.btoa(b64)}`;
 }
 
 let prefetchQueue = [];
