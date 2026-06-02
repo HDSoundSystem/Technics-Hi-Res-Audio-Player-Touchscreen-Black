@@ -20,7 +20,7 @@ let vuAnimationRunning = false;
 function updateVolumeIndicator() {
     if (volInd) {
         if (playlist.length > 0) {
-            volInd.textContent = 'VOLUME ' + Math.round(audio.volume * 100) + '%';
+            volInd.textContent = 'VOL ' + Math.round(audio.volume * 100) + '%';
             volInd.style.display = 'block';
         } else {
             volInd.style.display = 'none';
