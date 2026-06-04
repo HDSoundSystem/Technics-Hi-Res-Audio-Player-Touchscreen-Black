@@ -99,7 +99,7 @@ function savePreferences() {
     localStorage.setItem('technics_prefs_v12', JSON.stringify({
         volume: audio.volume, bass: bassGain, treble: trebleGain, dspPreset: currentDspPreset, waveform: waveformEnabled,
         appBackground: appBgColorPicker.value, vuActive: isVuActive, vuSensitivity: vuSensitivity, analogSensitivity: analogSensitivity, loudness: isLoudnessActive,
-        artBgActive: isArtBgActive
+        artBgActive: isArtBgActive, theme: currentTheme
     }));
 }
 
@@ -126,6 +126,7 @@ function loadPreferences() {
             if (btn) { btn.textContent = 'ON'; btn.classList.add('active'); }
             document.getElementById('artworkBg').classList.add('active');
         }
+        if (p.theme) { setTheme(p.theme); }
     }
     updateVolumeIndicator();
     updateToneIndicators();
@@ -134,6 +135,54 @@ function loadPreferences() {
 }
 
 function updateAppBackground(color) { document.body.style.backgroundColor = color; savePreferences(); }
+
+let currentTheme = 'black';
+
+function setTheme(theme) {
+    currentTheme = theme;
+    const chassis = document.getElementById('chassisMain');
+    const brandLogo = document.getElementById('chassisBrandLogo');
+    const classAa = document.getElementById('classAaLogo');
+    const pwrBtn = document.getElementById('pwrBtn');
+    const pwrLabel = document.querySelector('.pwr-label');
+    const silverBtn = document.getElementById('themeSilverBtn');
+    const blackBtn = document.getElementById('themeBlackBtn');
+
+    if (theme === 'silver') {
+        // Chassis image
+        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(105,105,105,0.25) 0%, rgba(0,0,0,0.425) 50%, rgba(105,105,105,0.25) 100%), url('img/chassis_w.png')";
+        // Brand logo (chassis only)
+        if (brandLogo) brandLogo.src = 'img/technics_brand_2.webp';
+        // Class AA logo
+        if (classAa) classAa.src = 'img/class_aa_3.png';
+        // Power button & label from theme.css
+        if (pwrBtn) {
+            pwrBtn.style.background = "conic-gradient(from -90deg, #d8d8d8 0%, #ffffff 5%, #d8d8d8 10%, #bfbfbf 15%, #d8d8d8 20%, #ffffff 25%, #d8d8d8 30%, #bfbfbf 35%, #d8d8d8 40%, #ffffff 45%, #d8d8d8 50%, #bfbfbf 55%, #d8d8d8 60%, #ffffff 65%, #d8d8d8 70%, #bfbfbf 75%, #d8d8d8 80%, #ffffff 85%, #d8d8d8 90%, #bfbfbf 95%, #d8d8d8 100%), repeating-radial-gradient(circle, #e6e6e6 0px, #e6e6e6 1px, #d9d9d9 1px, #d9d9d9 2px)";
+            pwrBtn.style.border = "2px solid rgba(8,8,8,0.452)";
+            pwrBtn.style.boxShadow = "";
+            pwrBtn.style.color = "#333";
+        }
+        if (pwrLabel) { pwrLabel.style.color = "#333"; pwrLabel.style.fontWeight = "300"; }
+        // Theme buttons state
+        if (silverBtn) silverBtn.classList.add('active');
+        if (blackBtn) blackBtn.classList.remove('active');
+    } else {
+        // Restore black theme
+        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(105,105,105,0.25) 0%, rgba(0,0,0,0.425) 50%, rgba(105,105,105,0.25) 100%), url('img/chassis_b.png')";
+        if (brandLogo) brandLogo.src = 'img/technics_brand_1.webp';
+        if (classAa) classAa.src = 'img/class_aa_2.png';
+        if (pwrBtn) {
+            pwrBtn.style.background = "conic-gradient(from -90deg, #222222 0%, #444444 5%, #222222 10%, #151515 15%, #222222 20%, #444444 25%, #222222 30%, #151515 35%, #222222 40%, #444444 45%, #222222 50%, #151515 55%, #222222 60%, #444444 65%, #222222 70%, #151515 75%, #222222 80%, #444444 85%, #222222 90%, #151515 95%, #222222 100%), repeating-radial-gradient(circle, #2a2a2a 0px, #2a2a2a 1px, #1a1a1a 1px, #1a1a1a 2px)";
+            pwrBtn.style.border = "2px solid rgba(0,0,0,0.8)";
+            pwrBtn.style.boxShadow = "inset 0.5px 0.5px 1px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.4)";
+            pwrBtn.style.color = "#acacac";
+        }
+        if (pwrLabel) { pwrLabel.style.color = "#acacac"; pwrLabel.style.fontWeight = "300"; }
+        if (silverBtn) silverBtn.classList.remove('active');
+        if (blackBtn) blackBtn.classList.add('active');
+    }
+    savePreferences();
+}
 
 let isArtBgActive = true;
 
