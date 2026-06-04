@@ -150,7 +150,7 @@ function setTheme(theme) {
 
     if (theme === 'silver') {
         // Chassis image
-        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(105,105,105,0.25) 0%, rgba(0,0,0,0.425) 50%, rgba(105,105,105,0.25) 100%), url('img/chassis_w.png')";
+        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.05) 50%, rgba(255,255,255,0.25) 100%), url('img/chassis_w.png')";
         // Brand logo (chassis only)
         if (brandLogo) brandLogo.src = 'img/technics_brand_2.webp';
         // Class AA logo
