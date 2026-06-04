@@ -133,6 +133,15 @@ body {
     filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.3));
 }
 
+.modal-logo {
+    position: absolute;
+    bottom: 290px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 15px;
+    width: auto;
+}
+
 .screen-zone {
     flex-grow: 1;
     display: flex;
