@@ -1,10 +1,10 @@
-# Technics High Resolution Audio Player Touch Edition Black Edition
+# Technics High Resolution Audio Player Touch Edition
 
 <img width="1878" height="737" alt="Capture d&#39;écran 2026-05-31 084618" src="https://github.com/user-attachments/assets/5b32088c-4205-4c35-ad59-343a15576f00" />
 
 ---
 
-# 🎧 Technics High Resolution Audio Player Touch Edition Black Edition
+# 🎧 Technics High Resolution Audio Player Touch Edition
 
 A web-based progressive audio player (PWA) that emulates the interface, ergonomics, and aesthetics of vintage High-Fidelity hardware. This player integrates advanced audio signal processing via the **Web Audio API** and features high-performance, real-time dynamic visualizers.
 
@@ -116,11 +116,6 @@ The `Web Audio API` routing graph is structured as follows within the applicatio
 
 This application is completely standalone and runs entirely client-side (Vanilla JS).
 
-1. Clone or download the HTML, CSS, and JavaScript files into your local directory.
-2. Ensure you include the metadata parser dependency in your HTML header:
+Clone or download the HTML, CSS, and JavaScript files into your local directory.
 
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
-```
-
-3. Run the project using a local development server (e.g., *Live Server* extension in VS Code) to prevent CORS issues when instantiating the `AudioContext` and processing local files.
+Run the project using a local development server (e.g., *Live Server* extension in VS Code) to prevent CORS issues when instantiating the `AudioContext` and processing local files.

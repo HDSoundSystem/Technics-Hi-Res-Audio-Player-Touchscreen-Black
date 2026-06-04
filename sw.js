@@ -1,9 +1,10 @@
-const CACHE_NAME = 'Technics-HR-TE-v4';
+const CACHE_NAME = 'Technics-HR-TE-v5';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
+  './jsmediatags.min.js',
   './img/technics_brand_1.webp',
   './img/technics_brand_2.webp',
   './img/technics_brand.webp',
