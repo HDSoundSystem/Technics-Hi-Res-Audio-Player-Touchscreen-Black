@@ -207,7 +207,7 @@ function updateArtworkBackground(coverUrl) {
     if (coverUrl) {
         bg.style.backgroundImage = `url(${coverUrl})`;
     } else {
-        bg.style.backgroundImage = 'none';
+        bg.style.backgroundImage = "url('img/Technics_cover.webp')";
     }
 }
 
@@ -619,12 +619,13 @@ function loadTrack(index, autoPlay = true) {
         document.getElementById('trackArtist').innerText = artist;
         document.getElementById('trackAlbum').innerText = album;
         const art = document.getElementById('albumArt');
+        const DEFAULT_COVER = 'img/Technics_cover.webp';
         if (coverUrl) {
             art.style.backgroundImage = `url(${coverUrl})`;
             art.innerHTML = "";
         } else {
-            art.style.backgroundImage = "none";
-            art.innerHTML = '<i class="fa-solid fa-compact-disc"></i>';
+            art.style.backgroundImage = `url(${DEFAULT_COVER})`;
+            art.innerHTML = "";
         }
         updateArtworkBackground(coverUrl);
         updateMediaSession(title, artist, album, coverUrl || '');
@@ -736,8 +737,54 @@ dropZone.addEventListener('dragleave', (e) => {
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
-    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('audio/'));
-    if (files.length > 0) addFiles(files);
+
+    const AUDIO_EXTS = /\.(mp3|flac|wav|aac|ogg|m4a|opus|wma|aiff|aif|dsf|dff|ape|wv)$/i;
+
+    function isAudioFile(name, type) {
+        return type.startsWith('audio/') || AUDIO_EXTS.test(name);
+    }
+
+    function readEntryFiles(entry) {
+        return new Promise((resolve) => {
+            if (entry.isFile) {
+                entry.file(f => {
+                    resolve(isAudioFile(f.name, f.type) ? [f] : []);
+                }, () => resolve([]));
+            } else if (entry.isDirectory) {
+                const reader = entry.createReader();
+                const allFiles = [];
+                function readBatch() {
+                    reader.readEntries((entries) => {
+                        if (entries.length === 0) {
+                            Promise.all(allFiles).then(results => resolve(results.flat()));
+                        } else {
+                            allFiles.push(...entries.map(readEntryFiles));
+                            readBatch();
+                        }
+                    }, () => resolve([]));
+                }
+                readBatch();
+            } else {
+                resolve([]);
+            }
+        });
+    }
+
+    const items = Array.from(e.dataTransfer.items);
+    const entries = items
+        .map(item => item.webkitGetAsEntry ? item.webkitGetAsEntry() : null)
+        .filter(Boolean);
+
+    if (entries.length > 0) {
+        Promise.all(entries.map(readEntryFiles)).then(results => {
+            const files = results.flat().sort((a, b) => a.name.localeCompare(b.name));
+            if (files.length > 0) addFiles(files);
+        });
+    } else {
+        // Fallback : drop de fichiers simples
+        const files = Array.from(e.dataTransfer.files).filter(f => isAudioFile(f.name, f.type));
+        if (files.length > 0) addFiles(files);
+    }
 });
 
 function addFiles(files) {
@@ -1059,6 +1106,7 @@ function getTrackLabel(file, textEl, imgEl) {
         if (imgEl) {
             const url = coverCache.get(file);
             if (url) { imgEl.src = url; imgEl.style.display = 'block'; }
+            else { imgEl.src = 'img/Technics_cover.webp'; imgEl.style.display = 'block'; }
         }
         return;
     }
@@ -1072,8 +1120,9 @@ function getTrackLabel(file, textEl, imgEl) {
                     const coverUrl = extractCover(tag.tags);
                     coverCache.set(file, coverUrl);
                     if (coverUrl) { imgEl.src = coverUrl; imgEl.style.display = 'block'; }
+                    else { imgEl.src = 'img/Technics_cover.webp'; imgEl.style.display = 'block'; }
                 },
-                onError: () => { coverCache.set(file, null); }
+                onError: () => { coverCache.set(file, null); imgEl.src = 'img/Technics_cover.webp'; imgEl.style.display = 'block'; }
             });
         } else {
             coverCache.set(file, null);
@@ -1097,6 +1146,7 @@ function getTrackLabel(file, textEl, imgEl) {
             const coverUrl = extractCover(t);
             coverCache.set(file, coverUrl);
             if (imgEl && coverUrl) { imgEl.src = coverUrl; imgEl.style.display = 'block'; }
+            else if (imgEl) { imgEl.src = 'img/Technics_cover.webp'; imgEl.style.display = 'block'; }
         },
         onError: () => {
             const title = file.name.toUpperCase();
@@ -1105,6 +1155,7 @@ function getTrackLabel(file, textEl, imgEl) {
             _persistMeta(file, title, 'UNKNOWN ARTIST', '');
             coverCache.set(file, null);
             textEl.innerHTML = html;
+            if (imgEl) { imgEl.src = 'img/Technics_cover.webp'; imgEl.style.display = 'block'; }
         }
     });
 }

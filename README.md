@@ -1,7 +1,7 @@
 # Technics High Resolution Audio Player Touch Edition
 
 <img width="1878" height="737" alt="Capture d&#39;écran 2026-05-31 084618" src="https://github.com/user-attachments/assets/5b32088c-4205-4c35-ad59-343a15576f00" />
-
+<img width="1862" height="735" alt="Capture d&#39;écran 2026-06-04 215253" src="https://github.com/user-attachments/assets/3b9ff38d-aacc-4bfe-a657-dd62cfd3b820" />
 ---
 
 # 🎧 Technics High Resolution Audio Player Touch Edition
@@ -43,10 +43,14 @@ The system embeds a dual, switchable spectral analysis module (`AnalyserNode`, `
 
 ### 🗂️ Playlist Management & Metadata Parsing
 
-* **Hybrid Import:** Load audio files via the native file selector or by dropping them directly anywhere onto the main screen using **Drag & Drop**.
+* **Hybrid Import:** Load audio files via the native file selector or by dropping them directly onto the main screen using **Drag & Drop**:
+  * Drop individual audio files or a mix of files and folders simultaneously.
+  * Dropping a **folder** recursively traverses its contents and imports only valid audio files (filtered by MIME type and extension), sorted alphabetically by filename.
+  * Supported extensions: `mp3`, `flac`, `wav`, `aac`, `ogg`, `m4a`, `opus`, `wma`, `aiff`, `dsf`, `dff`, `ape`, `wv`.
 * **ID3 Tag Parsing:** Integrated `jsmediatags` library to seamlessly extract and display:
   * Track title, artist name, and album title (automatically formatted in uppercase).
   * Embedded album artwork converted on-the-fly to a Base64 data URL.
+  * If no embedded artwork is found, the default `Technics_cover.webp` placeholder is displayed in both the album art zone and the playlist thumbnails.
 
 * **Background Metadata Prefetch:** After loading the first track, the player queues remaining tracks for background metadata extraction via a sequential prefetch scheduler, eliminating any loading latency on track change.
 * **Interactive Mini-Playlist:** A side menu drawer to view the current queue, switch instantly to any track, or remove a track with automatic playlist index recalculation.
