@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Technics-HR-TBE-v3';
+const CACHE_NAME = 'Technics-HR-TE-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -6,12 +6,12 @@ const ASSETS = [
   './app.js',
   './img/technics_brand_1.webp',
   './img/technics_brand_2.webp',
-  './img/technics_brand.png',
-  './img/technics_cover.png',
-  './img/class_aa_2.png',
-  './img/class_aa_3.png',
-  './img/chassis_b.png',
-  './img/chassis_w.png',
+  './img/technics_brand.webp',
+  './img/technics_cover.webp',
+  './img/class_aa_2.webp',
+  './img/class_aa_3.webp',
+  './img/chassis_b.webp',
+  './img/chassis_w.webp',
   './img/favicon.png'
 ];
 
