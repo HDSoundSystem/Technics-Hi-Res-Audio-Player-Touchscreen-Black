@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Technics HR Audio Player Touch Black Edition</title>
+        <title>Technics HR Audio Player Touch Edition</title>
         <meta name="keywords"
             content="Technics, Hi-Res Audio, Audio Player, Mini, HiFi, Touchscreen, Music Player, Web App, flac, mp3, music">
         <meta name="Yohann Zaoui">
@@ -41,16 +41,19 @@
                     <button class="modal-btn" id="modalCancel">CANCEL</button>
                     <button class="modal-btn confirm"
                         id="modalConfirm">RESTART</button>
-                        <img src="img/technics_brand.png" alt="Technics"
-                    class="modal-logo">
+                    <img src="img/technics_brand.png" alt="Technics"
+                        class="modal-logo">
                 </div>
             </div>
         </div>
 
         <div class="chassis" id="chassisMain">
             <div class="brand-header">
-                <img src="img/technics_brand_1.webp" alt="Technics"
-                    class="brand-logo">
+                <img id="chassisBrandLogo" src="img/technics_brand_1.webp"
+                    alt="Technics"
+                    class="brand-logo"
+                    onclick="setTheme(currentTheme === 'black' ? 'silver' : 'black')"
+                    style="cursor:pointer;">
                 <span></span>
             </div>
 
@@ -58,7 +61,7 @@
                 <button class="btn-power" id="pwrBtn"><i
                         class="fa-solid fa-power-off"></i></button>
                 <div class="pwr-label">POWER</div>
-                <img src="img/class_aa_2.png" alt="Class AA"
+                <img id="classAaLogo" src="img/class_aa_2.png" alt="Class AA"
                     class="class-aa-logo">
             </div>
 
@@ -172,6 +175,17 @@
                             <button id="artBgToggleBtn"
                                 class="btn-settings-wide"
                                 onclick="toggleArtBackground()">OFF</button>
+                        </div>
+                        <div class="tone-row">
+                            <span class="tone-label">THEME</span>
+                            <div style="display:flex;gap:6px;flex:1;">
+                                <button id="themeSilverBtn"
+                                    class="btn-settings-wide"
+                                    onclick="setTheme('silver')">SILVER</button>
+                                <button id="themeBlackBtn"
+                                    class="btn-settings-wide active"
+                                    onclick="setTheme('black')">BLACK</button>
+                            </div>
                         </div>
                         <div class="tone-row">
                             <span class="tone-label">BACKGROUND COLOR</span>
