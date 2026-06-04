@@ -150,12 +150,12 @@ function setTheme(theme) {
 
     if (theme === 'silver') {
         // Chassis image
-        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.05) 50%, rgba(255,255,255,0.25) 100%), url('img/chassis_w.png')";
+        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(255,255,255,0.25) 0%, rgba(0,0,0,0.05) 50%, rgba(255,255,255,0.25) 100%), url('img/chassis_w.webp')";
         chassis.style.boxShadow = "0 50px 100px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.6)";
         // Brand logo (chassis only)
         if (brandLogo) brandLogo.src = 'img/technics_brand_2.webp';
         // Class AA logo
-        if (classAa) classAa.src = 'img/class_aa_3.png';
+        if (classAa) classAa.src = 'img/class_aa_3.webp';
         // Power button & label from theme.css
         if (pwrBtn) {
             pwrBtn.style.background = "conic-gradient(from -90deg, #d8d8d8 0%, #ffffff 5%, #d8d8d8 10%, #bfbfbf 15%, #d8d8d8 20%, #ffffff 25%, #d8d8d8 30%, #bfbfbf 35%, #d8d8d8 40%, #ffffff 45%, #d8d8d8 50%, #bfbfbf 55%, #d8d8d8 60%, #ffffff 65%, #d8d8d8 70%, #bfbfbf 75%, #d8d8d8 80%, #ffffff 85%, #d8d8d8 90%, #bfbfbf 95%, #d8d8d8 100%), repeating-radial-gradient(circle, #e6e6e6 0px, #e6e6e6 1px, #d9d9d9 1px, #d9d9d9 2px)";
@@ -169,10 +169,10 @@ function setTheme(theme) {
         if (blackBtn) blackBtn.classList.remove('active');
     } else {
         // Restore black theme
-        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(105,105,105,0.25) 0%, rgba(0,0,0,0.425) 50%, rgba(105,105,105,0.25) 100%), url('img/chassis_b.png')";
+        chassis.style.backgroundImage = "linear-gradient(90deg, rgba(105,105,105,0.25) 0%, rgba(0,0,0,0.425) 50%, rgba(105,105,105,0.25) 100%), url('img/chassis_b.webp')";
         chassis.style.boxShadow ="0 50px 100px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(109, 109, 109, 0.6)";
         if (brandLogo) brandLogo.src = 'img/technics_brand_1.webp';
-        if (classAa) classAa.src = 'img/class_aa_2.png';
+        if (classAa) classAa.src = 'img/class_aa_2.webp';
         if (pwrBtn) {
             pwrBtn.style.background = "conic-gradient(from -90deg, #222222 0%, #444444 5%, #222222 10%, #151515 15%, #222222 20%, #444444 25%, #222222 30%, #151515 35%, #222222 40%, #444444 45%, #222222 50%, #151515 55%, #222222 60%, #444444 65%, #222222 70%, #151515 75%, #222222 80%, #444444 85%, #222222 90%, #151515 95%, #222222 100%), repeating-radial-gradient(circle, #2a2a2a 0px, #2a2a2a 1px, #1a1a1a 1px, #1a1a1a 2px)";
             pwrBtn.style.border = "2px solid rgba(0,0,0,0.8)";

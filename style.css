@@ -35,7 +35,7 @@ body {
     height: var(--chassis-H);
     background:
         linear-gradient(90deg, rgba(105, 105, 105, 0.25) 0%, rgba(0, 0, 0, 0.425) 50%, rgba(105, 105, 105, 0.25) 100%),
-        url('./img/chassis_b.png') center/cover no-repeat;
+        url('./img/chassis_b.webp') center/cover no-repeat;
 
     border-radius: 4px;
     position: relative;
