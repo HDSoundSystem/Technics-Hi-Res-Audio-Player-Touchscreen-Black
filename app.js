@@ -17,6 +17,19 @@ const vuContainer = document.getElementById('vuContainer');
 
 let vuAnimationRunning = false;
 
+// Ajuste la font-size d'un élément pour que son texte tienne sur une ligne
+function fitText(el, maxSize, minSize) {
+    if (!el) return;
+    maxSize = maxSize || 20;
+    minSize = minSize || 9;
+    el.style.fontSize = maxSize + 'px';
+    let size = maxSize;
+    while (el.scrollWidth > el.offsetWidth && size > minSize) {
+        size -= 0.5;
+        el.style.fontSize = size + 'px';
+    }
+}
+
 function updateVolumeIndicator() {
     if (volInd) {
         if (playlist.length > 0) {
@@ -615,9 +628,18 @@ function loadTrack(index, autoPlay = true) {
         tl.split('').map(c => `<span class="digit">${c}</span>`).join('');
 
     function applyTrackMeta(title, artist, album, coverUrl) {
-        document.getElementById('trackTitle').innerText = title;
-        document.getElementById('trackArtist').innerText = artist;
-        document.getElementById('trackAlbum').innerText = album;
+        const titleEl = document.getElementById('trackTitle');
+        const artistEl = document.getElementById('trackArtist');
+        const albumEl = document.getElementById('trackAlbum');
+        titleEl.innerText = title;
+        artistEl.innerText = artist;
+        albumEl.innerText = album;
+        // Redimensionnement auto si texte trop long
+        requestAnimationFrame(() => {
+            fitText(titleEl, 20, 9);
+            fitText(artistEl, 17, 9);
+            fitText(albumEl, 17, 9);
+        });
         const art = document.getElementById('albumArt');
         const DEFAULT_COVER = 'img/Technics_cover.webp';
         if (coverUrl) {

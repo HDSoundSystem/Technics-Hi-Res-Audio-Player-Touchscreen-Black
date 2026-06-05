@@ -435,7 +435,6 @@ body {
     min-width: 0;
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
     display: block;
     text-transform: uppercase;
 }
@@ -469,7 +468,6 @@ body {
     min-width: 0;
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
     display: block;
 }
 
