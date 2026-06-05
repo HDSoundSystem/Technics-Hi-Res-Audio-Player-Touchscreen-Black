@@ -1,7 +1,7 @@
 # Technics High Resolution Audio Player Touch Edition
 
 <img width="1878" height="737" alt="Capture d&#39;écran 2026-05-31 084618" src="https://github.com/user-attachments/assets/5b32088c-4205-4c35-ad59-343a15576f00" />
-
+<img width="1862" height="735" alt="Capture d&#39;écran 2026-06-04 215253" src="https://github.com/user-attachments/assets/3b9ff38d-aacc-4bfe-a657-dd62cfd3b820" />
 ---
 
 # 🎧 Technics High Resolution Audio Player Touch Edition
