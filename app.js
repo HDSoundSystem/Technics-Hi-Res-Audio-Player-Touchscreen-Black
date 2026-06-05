@@ -1372,12 +1372,23 @@ function hideAllMenus() {
     [document.getElementById('toneBtn'), document.getElementById('settingsBtn'), document.getElementById('playlistBtn')].forEach(b => b.classList.remove('active'));
 }
 
+let timeRemaining = false;
+
+document.getElementById('timeCounter').addEventListener('click', () => {
+    timeRemaining = !timeRemaining;
+});
+
 audio.ontimeupdate = () => {
     const p = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
     progressBar.style.width = p + "%";
-    const cur = formatTime(audio.currentTime);
-    const dur = formatTime(audio.duration || 0);
-    document.getElementById('timeCounter').innerHTML = 'TIME ' + cur + ' ' + sep('/') + ' ' + dur;
+    const dur = audio.duration || 0;
+    if (timeRemaining) {
+        const rem = formatTime(Math.max(0, dur - audio.currentTime));
+        document.getElementById('timeCounter').innerHTML = 'TIME ' + sep('-') + rem + ' ' + sep('/') + ' ' + formatTime(dur);
+    } else {
+        const cur = formatTime(audio.currentTime);
+        document.getElementById('timeCounter').innerHTML = 'TIME ' + cur + ' ' + sep('/') + ' ' + formatTime(dur);
+    }
 };
 
 function digit(c) { return `<span class="digit">${c}</span>`; }
