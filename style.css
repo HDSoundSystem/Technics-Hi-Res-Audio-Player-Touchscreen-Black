@@ -681,6 +681,10 @@ body {
     text-align: center;
 }
 
+.time-counter{
+    cursor: pointer;
+}
+
 .visible {
     opacity: 1 !important;
 }
