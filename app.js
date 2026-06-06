@@ -33,7 +33,20 @@ function fitText(el, maxSize, minSize) {
 function updateVolumeIndicator() {
     if (volInd) {
         if (playlist.length > 0) {
-            volInd.textContent = 'VOL ' + Math.round(audio.volume * 100) + '%';
+            const S = (w, v) => `<span style="display:inline-block;width:${w};text-align:center">${v}</span>`;
+            const raw = audio.volume === 0 ? -Infinity : 20 * Math.log10(audio.volume);
+            let sign, d0, d1, d2, dec, f0, f1;
+            if (!isFinite(raw)) {
+                sign = '-'; d0 = '∞'; d1 = ''; d2 = ''; dec = ''; f0 = ''; f1 = '';
+            } else {
+                const absVal = Math.abs(raw).toFixed(1);
+                const parts = absVal.split('.');
+                const intPart = parts[0].padStart(2, '\u2007'); // figure space
+                sign = raw <= 0 ? '-' : '+';
+                d0 = intPart[0]; d1 = intPart[1] || '\u2007';
+                dec = '.'; f0 = parts[1] || '0'; f1 = '';
+            }
+            volInd.innerHTML = 'VOL\u00a0' + S('1ch',sign) + S('1ch',d0) + S('1ch',d1) + S('0.5ch',dec) + S('1ch',f0) + '\u00a0dB';
             volInd.style.display = 'block';
         } else {
             volInd.style.display = 'none';
