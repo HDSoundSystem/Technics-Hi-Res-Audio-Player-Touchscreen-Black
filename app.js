@@ -47,7 +47,7 @@ function updateVolumeIndicator() {
                 dec = '.'; f0 = parts[1] || '0'; f1 = '';
             }
             volInd.innerHTML = 'VOL\u00a0' + S('1ch',sign) + S('1ch',d0) + S('1ch',d1) + S('0.5ch',dec) + S('1ch',f0) + '\u00a0dB';
-            volInd.style.display = 'block';
+            volInd.style.display = audio.muted ? 'none' : 'block';
         } else {
             volInd.style.display = 'none';
         }
@@ -1012,7 +1012,17 @@ function cycleRepeat() {
     document.getElementById('repeatBtn').classList.toggle('active', repeatMode > 0);
 }
 
-function toggleMute() { audio.muted = !audio.muted; muteInd.style.display = audio.muted ? 'block' : 'none'; document.getElementById('muteBtn').classList.toggle('active', audio.muted); }
+function toggleMute() {
+    audio.muted = !audio.muted;
+    if (audio.muted) {
+        volInd.style.display = 'none';
+        muteInd.style.display = 'block';
+    } else {
+        muteInd.style.display = 'none';
+        if (playlist.length > 0) volInd.style.display = 'block';
+    }
+    document.getElementById('muteBtn').classList.toggle('active', audio.muted);
+}
 
 function toggleTone() {
     const active = toneMenu.classList.contains('active');
