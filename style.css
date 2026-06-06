@@ -253,6 +253,7 @@ body {
 
 #volumeIndicator {
     display: block;
+    font-variant-numeric: tabular-nums;
 }
 
 .tone-menu {
