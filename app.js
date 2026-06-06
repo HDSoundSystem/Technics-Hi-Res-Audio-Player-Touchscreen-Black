@@ -37,16 +37,16 @@ function updateVolumeIndicator() {
             const raw = audio.volume === 0 ? -Infinity : 20 * Math.log10(audio.volume);
             let sign, d0, d1, d2, dec, f0, f1;
             if (!isFinite(raw)) {
-                sign = '-'; d0 = '∞'; d1 = ''; d2 = ''; dec = ''; f0 = ''; f1 = '';
+                volInd.innerHTML = 'VOL\u00a0<span style="display:inline-block;width:4.5ch;text-align:center"><i class="fa-solid fa-infinity"></i></span>\u00a0dB';
             } else {
                 const absVal = Math.abs(raw).toFixed(1);
                 const parts = absVal.split('.');
-                const intPart = parts[0].padStart(2, '\u2007'); // figure space
+                const intPart = parts[0].padStart(2, '\u2007');
                 sign = raw <= 0 ? '-' : '+';
                 d0 = intPart[0]; d1 = intPart[1] || '\u2007';
-                dec = '.'; f0 = parts[1] || '0'; f1 = '';
+                dec = '.'; f0 = parts[1] || '0';
+                volInd.innerHTML = 'VOL\u00a0' + S('1ch',sign) + S('1ch',d0) + S('1ch',d1) + S('0.5ch',dec) + S('1ch',f0) + '\u00a0dB';
             }
-            volInd.innerHTML = 'VOL\u00a0' + S('1ch',sign) + S('1ch',d0) + S('1ch',d1) + S('0.5ch',dec) + S('1ch',f0) + '\u00a0dB';
             volInd.style.display = audio.muted ? 'none' : 'block';
         } else {
             volInd.style.display = 'none';
