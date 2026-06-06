@@ -1096,7 +1096,7 @@ let prefetchQueue = [];
 let prefetchRunning = false;
 
 function prefetchNext() {
-    while (prefetchQueue.length > 0 && (metaCache.has(prefetchQueue[0]) || _hydrateFromPersisted(prefetchQueue[0]))) {
+    while (prefetchQueue.length > 0 && coverCache.has(prefetchQueue[0]) && (metaCache.has(prefetchQueue[0]) || _hydrateFromPersisted(prefetchQueue[0]))) {
         prefetchQueue.shift();
     }
     if (prefetchQueue.length === 0) { prefetchRunning = false; return; }
@@ -1130,7 +1130,7 @@ function prefetchNext() {
 }
 
 function schedulePrefetch(files) {
-    prefetchQueue.push(...files.filter(f => !metaCache.has(f) && !_hydrateFromPersisted(f)));
+    prefetchQueue.push(...files.filter(f => !coverCache.has(f) || (!metaCache.has(f) && !_hydrateFromPersisted(f))));
     if (!prefetchRunning) prefetchNext();
 }
 
