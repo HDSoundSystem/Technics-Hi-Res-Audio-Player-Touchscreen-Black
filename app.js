@@ -647,7 +647,7 @@ function loadTrack(index, autoPlay = true) {
         titleEl.innerText = title;
         artistEl.innerText = artist;
         albumEl.innerText = album;
-        // Redimensionnement auto si texte trop long
+        
         requestAnimationFrame(() => {
             fitText(titleEl, 20, 9);
             fitText(artistEl, 17, 9);
@@ -667,7 +667,7 @@ function loadTrack(index, autoPlay = true) {
     }
 
     if (metaCache.has(file) && coverCache.has(file)) {
-        // Tags ET cover déjà en mémoire : affichage immédiat
+        
         const cachedCover = coverCache.get(file);
         const tmp = document.createElement('div');
         tmp.innerHTML = metaCache.get(file);
@@ -677,8 +677,7 @@ function loadTrack(index, autoPlay = true) {
         const album = spans[2] ? spans[2].textContent.replace('ALBUM: ', '') : 'UNKNOWN ALBUM';
         applyTrackMeta(title, artist, album, cachedCover);
     } else if (_hydrateFromPersisted(file)) {
-        // Tags en localStorage, cover absente : afficher le texte immédiatement
-        // puis relire jsmediatags uniquement pour la cover
+        
         const tmp = document.createElement('div');
         tmp.innerHTML = metaCache.get(file);
         const spans = tmp.querySelectorAll('span');
@@ -729,7 +728,6 @@ function loadTrack(index, autoPlay = true) {
     audio.src = objectUrl;
     audio.dataset.objectUrl = objectUrl;
 
-    // durationCache : écoute loadedmetadata une seule fois pour persister la durée
     audio.addEventListener('loadedmetadata', function _onMeta() {
         audio.removeEventListener('loadedmetadata', _onMeta);
         if (isFinite(audio.duration) && audio.duration > 0) {
