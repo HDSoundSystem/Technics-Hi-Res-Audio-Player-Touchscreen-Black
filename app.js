@@ -45,7 +45,7 @@ function updateVolumeIndicator() {
                 sign = raw <= 0 ? '-' : '+';
                 d0 = intPart[0]; d1 = intPart[1] || '\u2007';
                 dec = '.'; f0 = parts[1] || '0';
-                volInd.innerHTML = 'VOL\u00a0' + S('1ch',sign) + S('1ch',d0) + S('1ch',d1) + S('0.5ch',dec) + S('1ch',f0) + '\u00a0dB';
+                volInd.innerHTML = 'VOL\u00a0' + S('1ch', sign) + S('1ch', d0) + S('1ch', d1) + S('0.5ch', dec) + S('1ch', f0) + '\u00a0dB';
             }
             volInd.style.display = audio.muted ? 'none' : 'block';
         } else {
@@ -182,7 +182,7 @@ function setTheme(theme) {
         if (brandLogo) brandLogo.src = 'img/technics_brand_2.webp';
         // Class AA logo
         if (classAa) classAa.src = 'img/class_aa_3.webp';
-        // Power button & label from theme.css
+        
         if (pwrBtn) {
             pwrBtn.style.background = "conic-gradient(from -90deg, #d8d8d8 0%, #ffffff 5%, #d8d8d8 10%, #bfbfbf 15%, #d8d8d8 20%, #ffffff 25%, #d8d8d8 30%, #bfbfbf 35%, #d8d8d8 40%, #ffffff 45%, #d8d8d8 50%, #bfbfbf 55%, #d8d8d8 60%, #ffffff 65%, #d8d8d8 70%, #bfbfbf 75%, #d8d8d8 80%, #ffffff 85%, #d8d8d8 90%, #bfbfbf 95%, #d8d8d8 100%), repeating-radial-gradient(circle, #e6e6e6 0px, #e6e6e6 1px, #d9d9d9 1px, #d9d9d9 2px)";
             pwrBtn.style.border = "2px solid rgba(8,8,8,0.452)";
@@ -196,7 +196,7 @@ function setTheme(theme) {
     } else {
         // Restore black theme
         chassis.style.backgroundImage = "linear-gradient(90deg, rgba(105,105,105,0.25) 0%, rgba(0,0,0,0.425) 50%, rgba(105,105,105,0.25) 100%), url('img/chassis_b.webp')";
-        chassis.style.boxShadow ="0 50px 100px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(109, 109, 109, 0.6)";
+        chassis.style.boxShadow = "0 50px 100px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(109, 109, 109, 0.6)";
         if (brandLogo) brandLogo.src = 'img/technics_brand_1.webp';
         if (classAa) classAa.src = 'img/class_aa_2.webp';
         if (pwrBtn) {
@@ -884,14 +884,14 @@ nextBtn.addEventListener('mousedown', () => {
             updateStatus("SEEK >>");
         }, 100);
     }, 500);
-    const up = (e) => {
+    const up = () => {
         clearTimeout(timer); clearInterval(seekInterval);
         if (isLongPress) {
-            e.stopPropagation(); // Bloque l'événement click si c'était un appui long
+            nextBtn.addEventListener('click', (e) => e.stopImmediatePropagation(), { capture: true, once: true });
         }
-        window.removeEventListener('mouseup', up, true);
+        window.removeEventListener('mouseup', up);
     };
-    window.addEventListener('mouseup', up, true);
+    window.addEventListener('mouseup', up);
 });
 
 prevBtn.addEventListener('mousedown', () => {
@@ -904,14 +904,14 @@ prevBtn.addEventListener('mousedown', () => {
             updateStatus("<< SEEK");
         }, 100);
     }, 500);
-    const up = (e) => {
+    const up = () => {
         clearTimeout(timer); clearInterval(seekInterval);
         if (isLongPress) {
-            e.stopPropagation();
+            prevBtn.addEventListener('click', (e) => e.stopImmediatePropagation(), { capture: true, once: true });
         }
-        window.removeEventListener('mouseup', up, true);
+        window.removeEventListener('mouseup', up);
     };
-    window.addEventListener('mouseup', up, true);
+    window.addEventListener('mouseup', up);
 });
 
 
@@ -982,14 +982,14 @@ function stopAudio() {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = "paused";
         // Optionnel : Vide l'affichage système lors d'un vrai STOP
-        navigator.mediaSession.metadata = null; 
+        navigator.mediaSession.metadata = null;
     }
 }
 audio.onended = () => {
     if (repeatMode === 1) { audio.play(); }
     else if (repeatMode === 2 || currentIndex < playlist.length - 1) { playNext(); }
     else {
-        // Dernier morceau terminé : passer le bouton en STOP
+
         audio.pause();
         audio.currentTime = 0;
         const icon = document.getElementById('playBtn').querySelector('i');
@@ -1045,19 +1045,18 @@ function togglePlaylist() {
 const metaCache = new Map();
 const coverCache = new Map();
 
-// ── Cache persistant (localStorage) ─────────────────────────────────────────
-// Clé : "filename|size" — les covers ne sont PAS persistées (trop lourdes en base64)
-const _META_STORE  = 'technics_metaCache_v1';
-const _DUR_STORE   = 'technics_durationCache_v1';
+
+const _META_STORE = 'technics_metaCache_v1';
+const _DUR_STORE = 'technics_durationCache_v1';
 
 let _pMeta = {};
-let _pDur  = {};
-try { _pMeta = JSON.parse(localStorage.getItem(_META_STORE)  || '{}'); } catch(e) {}
-try { _pDur  = JSON.parse(localStorage.getItem(_DUR_STORE)   || '{}'); } catch(e) {}
+let _pDur = {};
+try { _pMeta = JSON.parse(localStorage.getItem(_META_STORE) || '{}'); } catch (e) { }
+try { _pDur = JSON.parse(localStorage.getItem(_DUR_STORE) || '{}'); } catch (e) { }
 
 function _cacheKey(file) { return file.name + '|' + file.size; }
 
-// Tente de pré-hydrater metaCache depuis le localStorage ; retourne true si trouvé
+
 function _hydrateFromPersisted(file) {
     if (metaCache.has(file)) return true;
     const p = _pMeta[_cacheKey(file)];
@@ -1066,21 +1065,21 @@ function _hydrateFromPersisted(file) {
         + '<span class="pl-artist">ARTIST: ' + p.artist + '</span>'
         + (p.album ? '<span class="pl-album">ALBUM: ' + p.album + '</span>' : '');
     metaCache.set(file, html);
-    // coverCache intentionnellement laissé vide — sera rempli par jsmediatags
+
     return true;
 }
 
 function _persistMeta(file, title, artist, album) {
     _pMeta[_cacheKey(file)] = { title, artist, album };
-    try { localStorage.setItem(_META_STORE, JSON.stringify(_pMeta)); } catch(e) {}
+    try { localStorage.setItem(_META_STORE, JSON.stringify(_pMeta)); } catch (e) { }
 }
 
-// durationCache persistant
+
 const durationCache = {
     get(file) { return _pDur[_cacheKey(file)] ?? null; },
     set(file, dur) {
         _pDur[_cacheKey(file)] = dur;
-        try { localStorage.setItem(_DUR_STORE, JSON.stringify(_pDur)); } catch(e) {}
+        try { localStorage.setItem(_DUR_STORE, JSON.stringify(_pDur)); } catch (e) { }
     }
 };
 
@@ -1092,13 +1091,13 @@ function extractCover(t) {
     for (let i = 0; i < data.length; i += chunk) {
         b64 += String.fromCharCode.apply(null, data.slice(i, i + chunk));
     }
-    
+
     // Sécurité pour le type MIME
     let mimeType = format;
     if (!mimeType.includes('/')) {
         mimeType = `image/${format}`; // Transforme "jpeg" en "image/jpeg"
     }
-    
+
     return `data:${mimeType};base64,${window.btoa(b64)}`;
 }
 
@@ -1146,7 +1145,7 @@ function schedulePrefetch(files) {
 
 function getTrackLabel(file, textEl, imgEl) {
     if (metaCache.has(file) && coverCache.has(file)) {
-        // Tags ET cover en mémoire
+
         textEl.innerHTML = metaCache.get(file);
         if (imgEl) {
             const url = coverCache.get(file);
@@ -1156,7 +1155,7 @@ function getTrackLabel(file, textEl, imgEl) {
         return;
     }
     if (_hydrateFromPersisted(file) || metaCache.has(file)) {
-        // Tags en cache (localStorage ou mémoire), cover absente
+
         textEl.innerHTML = metaCache.get(file);
         if (imgEl) {
             // Relire jsmediatags uniquement pour la cover
@@ -1267,7 +1266,7 @@ function renderPlaylistMini(forceRebuild = false) {
 
         item.onclick = () => {
             loadTrack(index, true);
-            // Mise à jour du surlignage sans reconstruire le DOM
+
             container.querySelectorAll('.playlist-item-mini').forEach((el, i) => {
                 el.classList.toggle('active', i === index);
             });
